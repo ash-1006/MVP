@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Welcome, {{ name }}! (Student)</h2>
+            <a href="/logout">Logout</a>
+        </div>
+        <div class="instructions">
+            <h3>How to Mark Attendance</h3>
+            <p>1. Make sure you are logged in on this device's web browser.</p>
+            <p>2. When your teacher shows the QR code, scan it using your phone's camera app.</p>
+            <p>3. Open the link from the QR code to be marked present.</p>
+        </div>
+    </div>
+</body>
+</html>

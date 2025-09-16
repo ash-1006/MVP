@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Welcome, {{ name }}! (Teacher)</h2>
+            <a href="/logout">Logout</a>
+        </div>
+        
+        <button id="create-session-btn">Create Attendance Session</button>
+        
+        <div id="session-details" class="hidden">
+            <h3>Scan QR Code for Attendance</h3>
+            <div id="qrcode"></div>
+            <div class="attendance-tracker">
+                <h3>Live Attendance</h3>
+                <p><span id="count">0</span> student(s) present</p>
+                <ul id="attendance-list">
+                    </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const createBtn = document.getElementById('create-session-btn');
+        const sessionDetails = document.getElementById('session-details');
+        const qrcodeContainer = document.getElementById('qrcode');
+        const attendanceList = document.getElementById('attendance-list');
+        const countSpan = document.getElementById('count');
+        let currentSessionId = null;
+        let attendanceInterval = null;
+
+        createBtn.addEventListener('click', async () => {
+            // Fetch a new session from the backend
+            const response = await fetch('/api/create_session', { method: 'POST' });
+            const data = await response.json();
+            
+            currentSessionId = data.session_id;
+            const attendanceUrl = data.url;
+
+            // Clear previous QR code and list
+            qrcodeContainer.innerHTML = '';
+            attendanceList.innerHTML = '';
+            countSpan.innerText = '0';
+
+            // Generate new QR code
+            const typeNumber = 4;
+            const errorCorrectionLevel = 'L';
+            const qr = qrcode(typeNumber, errorCorrectionLevel);
+            qr.addData(attendanceUrl);
+            qr.make();
+            qrcodeContainer.innerHTML = qr.createImgTag();
+
+            sessionDetails.classList.remove('hidden');
+            createBtn.innerText = 'Create New Session';
+            
+            // Start polling for updates
+            if (attendanceInterval) clearInterval(attendanceInterval);
+            attendanceInterval = setInterval(updateAttendanceList, 2000); // Check every 2 seconds
+        });
+
+        async function updateAttendanceList() {
+            if (!currentSessionId) return;
+            
+            const response = await fetch(`/api/get_attendance/${currentSessionId}`);
+            const data = await response.json();
+            
+            // Update the list only if there are changes
+            if (data.attendees.length !== attendanceList.children.length) {
+                attendanceList.innerHTML = ''; // Clear list
+                data.attendees.forEach(student => {
+                    const li = document.createElement('li');
+                    li.textContent = student;
+                    attendanceList.appendChild(li);
+                });
+                countSpan.innerText = data.attendees.length;
+            }
+        }
+    </script>
+</body>
+</html>
