@@ -1,0 +1,46 @@
+# Python virtual environment
+# A virtual environment contains all the project dependencies and can be huge.
+# It should never be committed.
+venv/
+.venv/
+env/
+ENV/
+activate
+pip-selfcheck.json
+
+# Environment variables
+# Contains secret keys, API keys, etc.
+.env
+
+# Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Flask specific files
+# The instance folder is often used for private configuration or database files.
+instance/
+.webassets-cache/
+
+# IDE and editor configuration
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# Operating System generated files
+.DS_Store
+Thumbs.db
+
+# Build, distribution, and testing artifacts
+build/
+dist/
+*.egg-info/
+.coverage
+htmlcov/
+
+# Log files
+*.log
